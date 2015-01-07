@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jquery-Ztree</title>
+<!--
+	@author:SM
+	@desc:Ztree 组件(异步 or 同步加载)
+	@e-mail:sm0210@qq.com
+	@version 1.0
+	@url:官网API http://www.ztree.me/v3/main.php
+	@example 
+		//ajax请求配置
+		var configs={
+			 //async : false, // 不使用异步树，默认你需要一次加载所有的树，如果async:fasle不需要配置beforeExpand传参数到后台
+			 service: 'demoTreeService.queryTree', //方法名称必须是query开头
+			 params : {id : '1' , name:'zhangsan' }//请求参数
+		}
+		
+		//ztree原生配置(查询下级需要监听 beforeExpand 方法)
+		var settings ={
+			check:{
+				enable:true	//是否多选
+			},
+			view:{
+				showLine:false	//是否显示连接线
+			},
+			callback :{
+				//点击展开之前，重新复制查询条件
+				beforeExpand : function(treeId,treeNode){
+					//1.改变请求参数
+					 configs={
+						 service: 'demoTreeService.queryTree', //方法名称必须是query开头
+						 params : {id : treeNode.id , name : treeNode.name }//请求参数
+					 }
+					
+					//or 2.改变请求参数
+					configs.params = {id : treeNode.id , name:treeNode.name }
+					ztree.setting.setParams(configs);//重新赋值
+				}	
+			}
+		}
+		
+		//实例化ztree
+		var ztree=$('#id').initZtree(configs,settings);
+		
+		//******************************获取值参考**************************************
+		//获取提供的JS方法 --单选值获取
+		//console.log(ztree.setting.getValue());
+		 
+
+		//单选
+		//var obj=ztree.getSelectedNodes();
+		//console.log(obj[0]);
+		
+		//多选
+		//var objAll=ztree.getChangeCheckedNodes();
+		
+		//for(var i=0;i<objAll.length;i++){
+		//	console.log(objAll[i]);
+		//}
+		
+*
+-->
+<!--jqiery-->
+<script language="javascript" src="../jquery-1.11.1.js"></script>
+ <!-- ztree样式引入 -->
+<link rel="stylesheet" type="text/css" href="css/zTreeStyle/jquery_zTreeStyle.css"/>
+<!--ztree核心库-->
+<script type="text/javascript" src="js/jquery.ztreeCore.js"></script>
+<!--自定义ztree组件-->
+<script language="javascript" src="js/jquery-ztree.js"></script>
+<script language="javascript">
+
+//ztree对象
+var ztree;
+//请求参数信息
+var configs={
+	 //async : false, // 不使用异步树，默认你需要一次加载所有的树，如果async:fasle不需要配置callback
+	 service: 'data/parentTree.json', //url
+	 params : {id : '1' , name:'zhangsan' },//请求参数
+}
+//ztree settings
+var settings ={
+		check:{
+			enable:false //单选
+		},
+		view:{
+			showLine:false	
+		}
+		,callback :{
+			//点击展开之前，重新复制查询条件
+			beforeExpand : function(treeId,treeNode){
+				//alert(treeNode.id);
+				//改变请求参数
+				configs={
+					 service: 'data/subTree.json', //url
+					 params : {id : treeNode.id , name : treeNode.name }//请求参数
+				}				
+				//改变请求参数
+				ztree.setting.setParams(configs);//重新复制
+			}	
+		}
+}
+//
+$(function(){
+	//实例化Ztree
+	ztree=$('#treeDemo').initZtree(configs,settings);	
+	//console.log(ztree);	
+});
+
+
+function showVal(){
+		//获取提供的JS方法 --单选
+		//console.log(ztree.setting.getValue().name);
+
+		//单选
+		var obj=ztree.getSelectedNodes();
+		if(obj.length)
+			alert(obj[0].id +" == "+obj[0].name);
+		//console.log(obj.length);
+		
+		
+		//多选
+		/*var objAll=ztree.getChangeCheckedNodes();
+		console.log(objAll.length);
+		
+		for(var i=0;i<objAll.length;i++){
+			console.log(objAll[i].id +" == "+objAll[i].name);
+		}
+		*/
+		
+		
+}
+</script>
+</head>
+
+<body>
+<br />
+<br />
+<div style="border:1px solid red; margin:0 auto; width:500px;" >
+    <!--ztree-->
+    <div class="zTreeDemoBackground left">
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+   <!--ztree-->
+    
+<br />
+<br />
+
+    <input type="button" value="获取值" onclick="showVal();"/>
+</div> 
+</body>
+</html>
